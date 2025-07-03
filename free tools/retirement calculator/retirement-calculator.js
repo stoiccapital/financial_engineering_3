@@ -60,25 +60,23 @@ function generateInvestmentChart(targetAmount, annualReturn, currentAssets) {
     // Generate data points
     const years = [];
     const monthlyInvestments = [];
-    const labels = [];
     
     // Create data points for years 1 to 50
     for (let year = 1; year <= 50; year++) {
         const monthlyAmount = calculateMonthlyInvestmentNeeded(targetAmount, year, annualReturn, currentAssets);
-        
         // Only include reasonable values
-        if (monthlyAmount >= 0 && monthlyAmount < 1000000) {
+        if (monthlyAmount >= 0) {
             years.push(year);
             monthlyInvestments.push(monthlyAmount);
-            labels.push(`${year} year${year === 1 ? '' : 's'}`);
         }
     }
     
     // Create chart
+    const maxY = Math.max(...monthlyInvestments, 1);
     window.investmentChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels,
+            labels: years,
             datasets: [{
                 label: 'Monthly Investment Needed',
                 data: monthlyInvestments,
@@ -111,15 +109,11 @@ function generateInvestmentChart(targetAmount, annualReturn, currentAssets) {
                     borderWidth: 1,
                     callbacks: {
                         title: function(context) {
-                            return `Years to Retirement: ${context[0].label}`;
+                            return `Year ${context[0].dataIndex + 1}`;
                         },
                         label: function(context) {
                             const monthlyAmount = context.parsed.y;
-                            const totalInvested = monthlyAmount * context.dataIndex * 12;
-                            return [
-                                `Monthly Investment: ${formatCurrency(monthlyAmount)}`,
-                                `Total Invested: ${formatCurrency(totalInvested)}`
-                            ];
+                            return `Monthly Investment: ${formatCurrency(monthlyAmount)}`;
                         }
                     }
                 }
@@ -140,12 +134,11 @@ function generateInvestmentChart(targetAmount, annualReturn, currentAssets) {
                     },
                     ticks: {
                         color: '#666',
-                        maxTicksLimit: 10,
+                        maxTicksLimit: 20,
                         callback: function(value, index) {
-                            // Show labels for key years (1, 2, 3, 5, 10, 15, 20, 25, 30, etc.)
-                            const year = index + 1;
-                            if (year <= 3 || year % 5 === 0) {
-                                return year;
+                            // Show every 5th year for better readability
+                            if (index % 5 === 0 || index === 0 || index === 49) {
+                                return index + 1;
                             }
                             return '';
                         }
@@ -169,7 +162,126 @@ function generateInvestmentChart(targetAmount, annualReturn, currentAssets) {
                         callback: function(value) {
                             return formatCompactCurrency(value);
                         }
+                    },
+                    min: 0,
+                    max: maxY * 1.1
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        }
+    });
+}
+
+function generateCapitalGrowthChart(targetAmount, annualReturn, currentAssets, yearsToRetirement) {
+    const ctx = document.getElementById('capitalGrowthChart');
+    if (window.capitalGrowthChartInstance) {
+        window.capitalGrowthChartInstance.destroy();
+    }
+    const years = [];
+    const capital = [];
+    for (let year = 1; year <= 50; year++) {
+        // Calculate monthly investment needed for this year
+        const monthlyInvestment = calculateMonthlyInvestmentNeeded(targetAmount, year, annualReturn, currentAssets);
+        // Future value of current assets after 'year' years
+        const fvCurrent = currentAssets * Math.pow(1 + annualReturn, year);
+        // Future value of new investments (ordinary annuity formula)
+        let fvInvestments = 0;
+        if (monthlyInvestment > 0) {
+            const monthlyReturn = annualReturn / 12;
+            const n = year * 12;
+            if (Math.abs(monthlyReturn) < 1e-10) {
+                fvInvestments = monthlyInvestment * n;
+            } else {
+                fvInvestments = monthlyInvestment * ((Math.pow(1 + monthlyReturn, n) - 1) / monthlyReturn);
+            }
+        }
+        years.push(year);
+        capital.push(fvCurrent + fvInvestments);
+    }
+    const maxY = Math.max(...capital, 1);
+    window.capitalGrowthChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Projected Capital',
+                data: capital,
+                borderColor: '#0066cc',
+                backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#0066cc',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: '#000',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: '#333',
+                    borderWidth: 1,
+                    callbacks: {
+                        title: function(context) {
+                            return `Year ${context[0].dataIndex + 1}`;
+                        },
+                        label: function(context) {
+                            const capital = context.parsed.y;
+                            return `Projected Capital: ${formatCurrency(capital)}`;
+                        }
                     }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Years',
+                        color: '#333',
+                        font: { size: 14, weight: '600' }
+                    },
+                    grid: { color: '#e5e5e5' },
+                    ticks: {
+                        color: '#666',
+                        maxTicksLimit: 20,
+                        callback: function(value, index) {
+                            if (index % 5 === 0 || index === 0 || index === 49) {
+                                return index + 1;
+                            }
+                            return '';
+                        }
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Projected Capital ($)',
+                        color: '#333',
+                        font: { size: 14, weight: '600' }
+                    },
+                    grid: { color: '#e5e5e5' },
+                    ticks: {
+                        color: '#666',
+                        callback: function(value) {
+                            return formatCompactCurrency(value);
+                        }
+                    },
+                    min: 0,
+                    max: maxY * 1.1
                 }
             },
             interaction: {

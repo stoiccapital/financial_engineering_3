@@ -26,126 +26,242 @@ function calculateBBDS() {
     document.getElementById('futureAssetValue').textContent = formatCurrency(futureAssetValue);
     document.getElementById('futureLTV').textContent = futureLTV.toFixed(1) + '%';
     
-    // Generate strategy comparison
-    generateStrategyComparison(assetValue, assetGrowthRate, desiredMonthlyIncome, yearsToProject, interestRate);
-    
-    // Generate LTV scenarios
-    generateLTVScenarios(assetValue, desiredMonthlyIncome, interestRate);
+    // Generate 50-year asset growth chart
+    generateAssetGrowthChart(assetValue, assetGrowthRate, desiredMonthlyIncome, interestRate);
 }
 
-function generateStrategyComparison(assetValue, assetGrowthRate, desiredMonthlyIncome, yearsToProject, interestRate) {
-    const scenarios = [];
-    const monthlyReturn = Math.pow(1 + assetGrowthRate, 1/12) - 1;
-    const monthlyInterestRate = Math.pow(1 + interestRate, 1/12) - 1;
+function generateAssetGrowthChart(assetValue, assetGrowthRate, desiredMonthlyIncome, interestRate) {
+    const ctx = document.getElementById('assetGrowthChart');
     
-    // Strategy 1: Buy, Borrow, Die (interest-only loan)
-    const bbdLoanAmount = desiredMonthlyIncome / monthlyInterestRate;
-    const bbdLTV = bbdLoanAmount / assetValue;
-    const bbdMonthlyInterest = bbdLoanAmount * monthlyInterestRate;
-    const bbdFutureAssetValue = assetValue * Math.pow(1 + assetGrowthRate, yearsToProject);
-    const bbdNetWorth = bbdFutureAssetValue - bbdLoanAmount;
-    
-    scenarios.push({
-        strategy: 'Buy, Borrow, Die',
-        monthlyIncome: desiredMonthlyIncome,
-        assetValue: bbdFutureAssetValue,
-        netWorth: bbdNetWorth
-    });
-    
-    // Strategy 2: Systematic Withdrawal (4% rule)
-    const swInitialAssets = desiredMonthlyIncome * 12 / 0.04; // 4% rule
-    const swMonthlyWithdrawal = desiredMonthlyIncome;
-    let swRemainingAssets = swInitialAssets;
-    
-    for (let year = 0; year < yearsToProject; year++) {
-        for (let month = 0; month < 12; month++) {
-            swRemainingAssets = swRemainingAssets * (1 + monthlyReturn) - swMonthlyWithdrawal;
-        }
+    // Clear existing chart
+    if (window.assetGrowthChartInstance) {
+        window.assetGrowthChartInstance.destroy();
     }
-    swRemainingAssets = Math.max(0, swRemainingAssets);
     
-    scenarios.push({
-        strategy: '4% Withdrawal Rule',
-        monthlyIncome: desiredMonthlyIncome,
-        assetValue: swRemainingAssets,
-        netWorth: swRemainingAssets
+    // Generate data points for 50 years
+    const years = [];
+    const assetValues = [];
+    const netWorth = [];
+    const loanAmounts = [];
+    const ltvRatios = [];
+    
+    let currentLoanBalance = 0;
+    const annualWithdrawal = desiredMonthlyIncome * 12;
+    
+    for (let year = 0; year <= 50; year++) {
+        years.push(year);
+        
+        // Asset value grows over time
+        const currentAssetValue = assetValue * Math.pow(1 + assetGrowthRate, year);
+        assetValues.push(currentAssetValue);
+        
+        // Loan balance grows by annual withdrawal plus interest on the growing balance
+        if (year > 0) {
+            currentLoanBalance = currentLoanBalance + annualWithdrawal + (currentLoanBalance * interestRate);
+        }
+        loanAmounts.push(currentLoanBalance);
+        
+        // Net worth = asset value - loan amount
+        const currentNetWorth = currentAssetValue - currentLoanBalance;
+        netWorth.push(currentNetWorth);
+        
+        // LTV ratio = current loan amount / current asset value
+        const currentLTV = currentAssetValue > 0 ? (currentLoanBalance / currentAssetValue) * 100 : 0;
+        ltvRatios.push(currentLTV);
+    }
+    
+    // Dynamic point coloring for LTV Ratio
+    const ltvPointColors = ltvRatios.map(lv => {
+        if (lv < 30) return 'green';
+        if (lv < 50) return 'goldenrod';
+        return 'red';
     });
     
-    // Strategy 3: Dividend Strategy (3% yield)
-    const dividendYield = 0.03;
-    const dividendAssets = (desiredMonthlyIncome * 12) / dividendYield;
-    const dividendFutureValue = dividendAssets * Math.pow(1 + assetGrowthRate, yearsToProject);
-    const dividendNetWorth = dividendFutureValue;
-    
-    scenarios.push({
-        strategy: 'Dividend Strategy (3%)',
-        monthlyIncome: desiredMonthlyIncome,
-        assetValue: dividendFutureValue,
-        netWorth: dividendNetWorth
-    });
-    
-    // Update scenarios display
-    displayStrategyComparison(scenarios);
-}
-
-function displayStrategyComparison(scenarios) {
-    const table = document.getElementById('scenariosTable');
-    table.innerHTML = '';
-    
-    scenarios.forEach(scenario => {
-        const row = document.createElement('div');
-        row.className = 'scenarios-row';
-        
-        row.innerHTML = `
-            <div class="scenarios-cell">${scenario.strategy}</div>
-            <div class="scenarios-cell">${formatCompactCurrency(scenario.monthlyIncome)}</div>
-            <div class="scenarios-cell">${formatCompactCurrency(scenario.assetValue)}</div>
-            <div class="scenarios-cell">${formatCompactCurrency(scenario.netWorth)}</div>
-        `;
-        
-        table.appendChild(row);
-    });
-}
-
-function generateLTVScenarios(assetValue, desiredMonthlyIncome, interestRate) {
-    const scenarios = [];
-    const ltvRatios = [30, 40, 50, 60, 70, 80];
-    const monthlyInterestRate = Math.pow(1 + interestRate, 1/12) - 1;
-    
-    ltvRatios.forEach(ltv => {
-        const ltvDecimal = ltv / 100;
-        const maxLoan = assetValue * ltvDecimal;
-        const monthlyInterest = maxLoan * monthlyInterestRate;
-        const netIncome = maxLoan - monthlyInterest;
-        
-        scenarios.push({
-            ltv: ltv,
-            maxLoan: maxLoan,
-            monthlyInterest: monthlyInterest,
-            netIncome: netIncome
-        });
-    });
-    
-    // Update LTV scenarios display
-    displayLTVScenarios(scenarios);
-}
-
-function displayLTVScenarios(scenarios) {
-    const table = document.getElementById('ltvScenariosTable');
-    table.innerHTML = '';
-    
-    scenarios.forEach(scenario => {
-        const row = document.createElement('div');
-        row.className = 'scenarios-row';
-        
-        row.innerHTML = `
-            <div class="scenarios-cell">${scenario.ltv}%</div>
-            <div class="scenarios-cell">${formatCompactCurrency(scenario.maxLoan)}</div>
-            <div class="scenarios-cell">${formatCompactCurrency(scenario.monthlyInterest)}</div>
-            <div class="scenarios-cell">${formatCompactCurrency(scenario.netIncome)}</div>
-        `;
-        
-        table.appendChild(row);
+    // Create chart
+    window.assetGrowthChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Asset Value',
+                data: assetValues,
+                borderColor: '#000',
+                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 3,
+                fill: false,
+                tension: 0.4,
+                pointBackgroundColor: '#000',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                yAxisID: 'y'
+            }, {
+                label: 'Net Worth',
+                data: netWorth,
+                borderColor: '#dc3545',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                borderWidth: 3,
+                fill: false,
+                tension: 0.4,
+                pointBackgroundColor: '#dc3545',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                yAxisID: 'y'
+            }, {
+                label: 'Loan Amount',
+                data: loanAmounts,
+                borderColor: '#0066cc',
+                backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                borderWidth: 3,
+                fill: false,
+                tension: 0.4,
+                pointBackgroundColor: '#0066cc',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                yAxisID: 'y'
+            }, {
+                label: 'LTV Ratio',
+                data: ltvRatios,
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                borderWidth: 3,
+                fill: false,
+                tension: 0.4,
+                pointBackgroundColor: ltvPointColors,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                yAxisID: 'y1'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        font: {
+                            size: 14,
+                            weight: '500'
+                        }
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: '#000',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: '#333',
+                    borderWidth: 1,
+                    callbacks: {
+                        title: function(context) {
+                            return `Year ${context[0].dataIndex}`;
+                        },
+                        label: function(context) {
+                            const value = context.parsed.y;
+                            if (context.dataset.label === 'LTV Ratio') {
+                                return `LTV Ratio: ${value.toFixed(1)}%`;
+                            } else {
+                                return `${context.dataset.label}: ${formatCurrency(value)}`;
+                            }
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Years',
+                        color: '#333',
+                        font: {
+                            size: 14,
+                            weight: '600'
+                        }
+                    },
+                    grid: {
+                        color: '#e5e5e5'
+                    },
+                    ticks: {
+                        color: '#666',
+                        maxTicksLimit: 20,
+                        callback: function(value, index) {
+                            // Show every 5th year for better readability
+                            if (index % 5 === 0 || index === 0 || index === 50) {
+                                return index;
+                            }
+                            return '';
+                        }
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Value ($)',
+                        color: '#333',
+                        font: {
+                            size: 14,
+                            weight: '600'
+                        }
+                    },
+                    grid: {
+                        color: '#e5e5e5'
+                    },
+                    ticks: {
+                        color: '#666',
+                        callback: function(value) {
+                            return formatCompactCurrency(value);
+                        },
+                        min: 0,
+                        suggestedMax: Math.max(...assetValues, ...loanAmounts, ...netWorth, 1)
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'LTV Ratio (%)',
+                        color: '#333',
+                        font: {
+                            size: 14,
+                            weight: '600'
+                        }
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    },
+                    ticks: {
+                        color: '#666',
+                        callback: function(value) {
+                            return value.toFixed(0) + '%';
+                        },
+                        min: 0,
+                        suggestedMax: Math.max(...ltvRatios, 1)
+                    }
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        }
     });
 }
 

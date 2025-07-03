@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retirement Calculator - Financial Engineering</title>
+    <title>ROI Calculator - Financial Engineering</title>
     <link rel="stylesheet" href="../../style.css">
 </head>
 <body>
@@ -39,8 +39,8 @@
     <main class="main">
         <section class="hero">
             <div class="hero__container">
-                <h1 class="hero__title">Retirement Calculator</h1>
-                <p class="hero__subtitle">Calculate how much you need to invest monthly to achieve your retirement goals</p>
+                <h1 class="hero__title">ROI Calculator</h1>
+                <p class="hero__subtitle">Calculate your investment returns with compounding and leverage</p>
             </div>
         </section>
 
@@ -48,79 +48,101 @@
             <div class="content__container">
                 <div class="calculator">
                     <div class="calculator__inputs">
-                        <h2 class="calculator__title">Your Retirement Goals</h2>
+                        <h2 class="calculator__title">Investment Parameters</h2>
                         
                         <div class="input-group">
-                            <label for="desiredIncome" class="input-label">Desired Annual Income in Retirement</label>
+                            <label for="startingCapital" class="input-label">Starting Capital</label>
                             <div class="input-wrapper">
                                 <span class="input-prefix">$</span>
-                                <input type="number" id="desiredIncome" class="input-field" value="80000" min="0" step="1000">
+                                <input type="number" id="startingCapital" class="input-field" value="10000" min="0" step="1000">
                             </div>
                         </div>
 
                         <div class="input-group">
-                            <label for="currentAssets" class="input-label">Current Assets / Savings</label>
+                            <label for="monthlySavings" class="input-label">Monthly Savings</label>
                             <div class="input-wrapper">
                                 <span class="input-prefix">$</span>
-                                <input type="number" id="currentAssets" class="input-field" value="25000" min="0" step="1000">
+                                <input type="number" id="monthlySavings" class="input-field" value="0" min="0" step="100">
                             </div>
-                            <small class="input-help">Money you already have saved for retirement</small>
+                            <small class="input-help">Amount you add to your investment each month</small>
                         </div>
 
                         <div class="input-group">
-                            <label for="yearsToRetirement" class="input-label">Years Until Retirement</label>
-                            <input type="number" id="yearsToRetirement" class="input-field" value="30" min="1" max="50">
+                            <label for="compoundingRate" class="input-label">Annual Compounding Rate (%)</label>
+                            <input type="number" id="compoundingRate" class="input-field" value="10" min="0" max="100" step="0.1">
+                            <small class="input-help">Expected annual return on your investment</small>
                         </div>
 
                         <div class="input-group">
-                            <label for="interestRate" class="input-label">Expected Annual Return (%)</label>
-                            <input type="number" id="interestRate" class="input-field" value="7" min="0" max="20" step="0.1">
+                            <label for="years" class="input-label">Investment Period (Years)</label>
+                            <input type="number" id="years" class="input-field" value="10" min="1" max="50">
                         </div>
 
                         <div class="input-group">
-                            <label for="withdrawalRate" class="input-label">Safe Withdrawal Rate (%)</label>
-                            <input type="number" id="withdrawalRate" class="input-field" value="4" min="2" max="8" step="0.1">
-                            <small class="input-help">Typically 3-4% for sustainable retirement income</small>
+                            <label for="leverage" class="input-label">Leverage Multiplier</label>
+                            <input type="number" id="leverage" class="input-field" value="1" min="1" max="10" step="0.1">
+                            <small class="input-help">1x = no leverage, 2x = 50% borrowed, 3x = 67% borrowed</small>
                         </div>
 
-                        <button class="calculate-btn" onclick="calculateRetirement()">Calculate</button>
+                        <div class="input-group">
+                            <label for="roiThreshold" class="input-label">ROI Threshold (%)</label>
+                            <input type="number" id="roiThreshold" class="input-field" value="3" min="0" max="100" step="0.1">
+                            <small class="input-help">Minimum yearly return % at which monthly investments are still considered worth it</small>
+                        </div>
+
+                        <button class="calculate-btn" onclick="calculateROI()">Calculate</button>
                     </div>
 
                     <div class="calculator__results">
                         <h2 class="calculator__title">Results</h2>
                         
-                        <div class="result-card">
-                            <h3 class="result-title">Total Amount Needed</h3>
-                            <p class="result-value" id="totalNeeded">$0</p>
-                        </div>
-
-                        <div class="result-card">
-                            <h3 class="result-title">Future Value of Current Assets</h3>
-                            <p class="result-value" id="futureAssets">$0</p>
-                        </div>
-
                         <div class="result-card result-card--primary">
-                            <h3 class="result-title">Monthly Investment Required</h3>
-                            <p class="result-value" id="monthlyInvestment">$0</p>
+                            <h3 class="result-title">Final Portfolio Value</h3>
+                            <p class="result-value" id="finalValue">$0</p>
                         </div>
 
                         <div class="result-card">
-                            <h3 class="result-title">Total Invested Over Time</h3>
-                            <p class="result-value" id="totalInvested">$0</p>
+                            <h3 class="result-title">Total Return</h3>
+                            <p class="result-value" id="totalReturn">$0</p>
                         </div>
 
                         <div class="result-card">
-                            <h3 class="result-title">Investment Growth</h3>
-                            <p class="result-value" id="investmentGrowth">$0</p>
+                            <h3 class="result-title">ROI Percentage</h3>
+                            <p class="result-value" id="roiPercentage">0%</p>
                         </div>
+
+                        <div class="result-card">
+                            <h3 class="result-title">Annualized Return</h3>
+                            <p class="result-value" id="annualizedReturn">0%</p>
+                        </div>
+
+                        <div class="result-card">
+                            <h3 class="result-title">Leverage Impact</h3>
+                            <p class="result-value" id="leverageImpact">$0</p>
+                            <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">Additional value from leverage</small>
+                        </div>
+
+                        <div id="roiWarning" style="color: #dc3545; font-weight: 500; margin-top: 16px;"></div>
                     </div>
                 </div>
 
                 <div class="scenarios">
-                    <h2 class="scenarios__title">Investment Scenarios</h2>
-                    <p class="scenarios__subtitle">See how your required monthly investment changes with time</p>
+                    <h2 class="scenarios__title">Growth Over Time</h2>
+                    <p class="scenarios__subtitle">See how your investment grows year by year</p>
+                    
                     <div class="chart-container">
-                        <canvas id="scenariosChart" class="scenarios__chart"></canvas>
+                        <canvas id="growthChart" class="scenarios__chart"></canvas>
+                        <div id="chartTooltip" class="chart-tooltip"></div>
+                    </div>
+                </div>
+
+                <div class="scenarios" style="margin-top: 40px;">
+                    <h2 class="scenarios__title">Leverage Comparison</h2>
+                    <p class="scenarios__subtitle">Compare returns with different leverage levels</p>
+                    
+                    <div class="chart-container">
+                        <canvas id="leverageChart" class="scenarios__chart"></canvas>
+                        <div id="leverageTooltip" class="chart-tooltip"></div>
                     </div>
                 </div>
             </div>
@@ -157,6 +179,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../../script.js"></script>
-    <script src="retirement-calculator.js"></script>
+    <script src="roi-calculator.js"></script>
 </body>
 </html> 
