@@ -1,0 +1,160 @@
+/* Button Components - All button styles */
+
+/* Mode Buttons */
+.mode-btn {
+    padding: 8px 16px;
+    border: 1px solid #e5e5e5;
+    background: white;
+    color: #666;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.mode-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #d0d7de;
+}
+
+.mode-btn.active {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+/* Calculate Button */
+.calculate-btn {
+    background-color: #000;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-top: 16px;
+}
+
+.calculate-btn:hover {
+    background-color: #333;
+}
+
+/* Tool Card Button */
+.tool-card__button {
+    display: inline-block;
+    background-color: #000;
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-top: 12px;
+}
+
+.tool-card__button:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Auth Button */
+.auth-btn {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #000;
+    color: #fff;
+    margin-top: 16px;
+}
+
+.auth-btn:hover:not(:disabled) {
+    background-color: #333;
+}
+
+.auth-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Social Button */
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.social-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #d0d7de;
+}
+
+/* Auth Tab Button */
+.auth-tab {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background-color: #f8f9fa;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 6px 6px 0 0;
+}
+
+.auth-tab:hover {
+    background-color: #e9ecef;
+    color: #333;
+}
+
+.auth-tab--active {
+    background-color: #fff;
+    color: #000;
+    border-bottom: 2px solid #000;
+}
+
+/* Responsive Button Styles */
+@media (max-width: 768px) {
+    .auth-tab {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .social-btn {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-tab {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .auth-btn {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+} 

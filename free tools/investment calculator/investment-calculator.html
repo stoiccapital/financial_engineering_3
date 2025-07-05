@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Calculator - Financial Engineering</title>
+    <link rel="stylesheet" href="../../styles/main.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav__container">
+                <!-- Logo/Brand -->
+                <a href="../../index.html" class="nav__brand">Financial Engineering</a>
+                
+                <!-- Desktop Navigation -->
+                <ul class="nav__menu">
+                    <li class="nav__item">
+                        <a href="../../blogs/blogs.html" class="nav__link">Blogs</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="../free-tools.html" class="nav__link nav__link--active">Free Tools</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="../../login.html" class="nav__link nav__link--login">Log In</a>
+                    </li>
+                </ul>
+                
+                <!-- Mobile Hamburger Menu -->
+                <button class="nav__toggle" aria-label="Toggle navigation">
+                    <span class="nav__toggle-line"></span>
+                    <span class="nav__toggle-line"></span>
+                    <span class="nav__toggle-line"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <section class="hero">
+            <div class="hero__container">
+                <h1 class="hero__title">Investment Calculator</h1>
+                <p class="hero__subtitle">Calculate different investment metrics based on your inputs. Choose what you want to calculate.</p>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="content__container">
+                <div class="calculator">
+                    <div class="calculator__inputs">
+                        <h2 class="calculator__title">Calculation Mode</h2>
+                        
+                        <div class="mode-selector">
+                            <button class="mode-btn active" onclick="showMode('end-amount')">End Amount</button>
+                            <button class="mode-btn" onclick="showMode('additional-contribution')">Additional Contribution</button>
+                            <button class="mode-btn" onclick="showMode('return-rate')">Return Rate</button>
+                            <button class="mode-btn" onclick="showMode('starting-amount')">Starting Amount</button>
+                            <button class="mode-btn" onclick="showMode('investment-length')">Investment Length</button>
+                        </div>
+                        
+                        <!-- End Amount Calculator -->
+                        <div id="end-amount" class="calculation-mode">
+                            <h3>Calculate End Amount</h3>
+                            <p>Find out how much your investment will be worth at the end of the period.</p>
+                            
+                            <div class="input-group">
+                                <label for="ea-starting-amount" class="input-label">Starting Amount</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="ea-starting-amount" class="input-field" placeholder="e.g., 10000" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="ea-monthly-contribution" class="input-label">Monthly Contribution</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="ea-monthly-contribution" class="input-field" placeholder="e.g., 500" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="ea-return-rate" class="input-label">Annual Return Rate (%)</label>
+                                <input type="number" id="ea-return-rate" class="input-field" placeholder="e.g., 7" step="0.01" min="0" max="100">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="ea-years" class="input-label">Investment Length (Years)</label>
+                                <input type="number" id="ea-years" class="input-field" placeholder="e.g., 20" step="0.01" min="0">
+                            </div>
+                            
+                            <button class="calculate-btn" onclick="calculateEndAmount()">Calculate End Amount</button>
+                        </div>
+                        
+                        <!-- Additional Contribution Calculator -->
+                        <div id="additional-contribution" class="calculation-mode hidden">
+                            <h3>Calculate Required Monthly Contribution</h3>
+                            <p>Find out how much you need to contribute monthly to reach your target amount.</p>
+                            
+                            <div class="input-group">
+                                <label for="ac-starting-amount" class="input-label">Starting Amount</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="ac-starting-amount" class="input-field" placeholder="e.g., 10000" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="ac-target-amount" class="input-label">Target End Amount</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="ac-target-amount" class="input-field" placeholder="e.g., 500000" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="ac-return-rate" class="input-label">Annual Return Rate (%)</label>
+                                <input type="number" id="ac-return-rate" class="input-field" placeholder="e.g., 7" step="0.01" min="0" max="100">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="ac-years" class="input-label">Investment Length (Years)</label>
+                                <input type="number" id="ac-years" class="input-field" placeholder="e.g., 20" step="0.01" min="0">
+                            </div>
+                            
+                            <button class="calculate-btn" onclick="calculateAdditionalContribution()">Calculate Required Contribution</button>
+                        </div>
+                        
+                        <!-- Return Rate Calculator -->
+                        <div id="return-rate" class="calculation-mode hidden">
+                            <h3>Calculate Required Return Rate</h3>
+                            <p>Find out what return rate you need to achieve your target amount.</p>
+                            
+                            <div class="input-group">
+                                <label for="rr-starting-amount" class="input-label">Starting Amount</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="rr-starting-amount" class="input-field" placeholder="e.g., 10000" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="rr-monthly-contribution" class="input-label">Monthly Contribution</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="rr-monthly-contribution" class="input-field" placeholder="e.g., 500" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="rr-target-amount" class="input-label">Target End Amount</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="rr-target-amount" class="input-field" placeholder="e.g., 500000" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="rr-years" class="input-label">Investment Length (Years)</label>
+                                <input type="number" id="rr-years" class="input-field" placeholder="e.g., 20" step="0.01" min="0">
+                            </div>
+                            
+                            <button class="calculate-btn" onclick="calculateReturnRate()">Calculate Required Return Rate</button>
+                        </div>
+                        
+                        <!-- Starting Amount Calculator -->
+                        <div id="starting-amount" class="calculation-mode hidden">
+                            <h3>Calculate Required Starting Amount</h3>
+                            <p>Find out how much you need to start with to reach your target amount.</p>
+                            
+                            <div class="input-group">
+                                <label for="sa-monthly-contribution" class="input-label">Monthly Contribution</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="sa-monthly-contribution" class="input-field" placeholder="e.g., 500" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="sa-target-amount" class="input-label">Target End Amount</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="sa-target-amount" class="input-field" placeholder="e.g., 500000" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="sa-return-rate" class="input-label">Annual Return Rate (%)</label>
+                                <input type="number" id="sa-return-rate" class="input-field" placeholder="e.g., 7" step="0.01" min="0" max="100">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="sa-years" class="input-label">Investment Length (Years)</label>
+                                <input type="number" id="sa-years" class="input-field" placeholder="e.g., 20" step="0.01" min="0">
+                            </div>
+                            
+                            <button class="calculate-btn" onclick="calculateStartingAmount()">Calculate Required Starting Amount</button>
+                        </div>
+                        
+                        <!-- Investment Length Calculator -->
+                        <div id="investment-length" class="calculation-mode hidden">
+                            <h3>Calculate Investment Length</h3>
+                            <p>Find out how long it will take to reach your target amount.</p>
+                            
+                            <div class="input-group">
+                                <label for="il-starting-amount" class="input-label">Starting Amount</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="il-starting-amount" class="input-field" placeholder="e.g., 10000" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="il-monthly-contribution" class="input-label">Monthly Contribution</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="il-monthly-contribution" class="input-field" placeholder="e.g., 500" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="il-target-amount" class="input-label">Target End Amount</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">$</span>
+                                    <input type="number" id="il-target-amount" class="input-field" placeholder="e.g., 500000" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="il-return-rate" class="input-label">Annual Return Rate (%)</label>
+                                <input type="number" id="il-return-rate" class="input-field" placeholder="e.g., 7" step="0.01" min="0" max="100">
+                            </div>
+                            
+                            <button class="calculate-btn" onclick="calculateInvestmentLength()">Calculate Investment Length</button>
+                        </div>
+                    </div>
+
+                    <div class="calculator__results">
+                        <h2 class="calculator__title">Results</h2>
+                        
+                        <div class="results-grid">
+                            <div id="ea-result" class="result-card hidden">
+                                <h3 class="result-title">End Balance</h3>
+                                <p class="result-value" id="ea-result-value">$0</p>
+                            </div>
+
+                            <div id="ea-starting-amount-result" class="result-card hidden">
+                                <h3 class="result-title">Starting Amount</h3>
+                                <p class="result-value" id="ea-starting-amount-value">$0</p>
+                            </div>
+
+                            <div id="ea-total-contributions-result" class="result-card hidden">
+                                <h3 class="result-title">Total Contributions</h3>
+                                <p class="result-value" id="ea-total-contributions-value">$0</p>
+                            </div>
+
+                            <div id="ea-total-interest-result" class="result-card hidden">
+                                <h3 class="result-title">Total Interest</h3>
+                                <p class="result-value" id="ea-total-interest-value">$0</p>
+                            </div>
+                        </div>
+
+                        <div id="ac-result" class="result-card hidden">
+                            <h3 class="result-title">Required monthly contribution</h3>
+                            <p class="result-value" id="ac-result-value">$0</p>
+                        </div>
+
+                        <div id="rr-result" class="result-card hidden">
+                            <h3 class="result-title">Required annual return rate</h3>
+                            <p class="result-value" id="rr-result-value">0%</p>
+                        </div>
+
+                        <div id="sa-result" class="result-card hidden">
+                            <h3 class="result-title">Required starting amount</h3>
+                            <p class="result-value" id="sa-result-value">$0</p>
+                        </div>
+
+                        <div id="il-result" class="result-card hidden">
+                            <h3 class="result-title">Time to reach target</h3>
+                            <p class="result-value" id="il-result-value">0 years</p>
+                        </div>
+
+                        <div class="chart-section">
+                            <h3 class="chart-title">Balance Breakdown</h3>
+                            <div class="chart-container">
+                                <canvas id="balanceChart" class="scenarios__chart"></canvas>
+                            </div>
+                        </div>
+
+                        <div id="yearly-breakdown" class="yearly-breakdown">
+                            <h3 class="breakdown-title">Yearly Breakdown</h3>
+                            <div class="table-container">
+                                <table id="breakdown-table" class="breakdown-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Year</th>
+                                            <th>Starting Balance</th>
+                                            <th>Annual Contributions</th>
+                                            <th>Interest Earned</th>
+                                            <th>Ending Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="breakdown-tbody">
+                                        <tr class="empty-state">
+                                            <td colspan="5" style="text-align: center; color: #666; font-style: italic; padding: 24px;">
+                                                Enter values and calculate to see yearly breakdown
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__container">
+            <div class="footer__content">
+                <div class="footer__section">
+                    <h3>Financial Engineering</h3>
+                </div>
+                <div class="footer__section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="../../Footer/privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="../../Footer/terms-of-service.html">Terms of Service</a></li>
+                        <li><a href="../../Footer/cookies.html">Cookie Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer__section">
+                    <h4>Tools</h4>
+                    <ul>
+                        <li><a href="../free-tools.html">Free Tools</a></li>
+                        <li><a href="../../blogs/blogs.html">Blogs</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>&copy; 2024 Financial Engineering. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../script.js"></script>
+    <script src="shared-functions.js"></script>
+    <script src="end-amount-calculator.js"></script>
+    <script src="additional-contribution-calculator.js"></script>
+    <script src="return-rate-calculator.js"></script>
+    <script src="starting-amount-calculator.js"></script>
+    <script src="investment-length-calculator.js"></script>
+</body>
+</html> 

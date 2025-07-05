@@ -1,0 +1,130 @@
+/* Calculator Component - Calculator layout and styling */
+
+.calculator {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 60px;
+}
+
+.calculator__title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 32px;
+}
+
+.calculator__inputs {
+    background-color: #fafafa;
+    padding: 32px;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+}
+
+.calculator__results {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Mode Selector */
+.mode-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+/* Calculation Modes */
+.calculation-mode {
+    display: block;
+}
+
+.calculation-mode.hidden {
+    display: none;
+}
+
+.calculation-mode h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.calculation-mode p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* Results Grid */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.results-grid .result-card {
+    background-color: #fff;
+}
+
+.results-grid .result-title {
+    font-size: 14px;
+}
+
+.results-grid .result-value {
+    font-size: 18px;
+}
+
+/* Chart Section */
+.chart-section {
+    background-color: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+}
+
+.chart-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 16px;
+}
+
+/* Responsive Calculator Styles */
+@media (max-width: 768px) {
+    .calculator {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .calculator__inputs {
+        padding: 24px;
+    }
+
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+        height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .calculator__inputs {
+        padding: 20px;
+    }
+
+    .chart-container {
+        height: 200px;
+    }
+} 
