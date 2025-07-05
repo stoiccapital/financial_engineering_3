@@ -2,7 +2,7 @@
 
 /* Input Groups */
 .input-group {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .input-label {
@@ -30,12 +30,14 @@
 
 .input-field {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 14px;
     border: 1px solid #e5e5e5;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 16px;
     transition: all 0.2s ease;
     background-color: #fff;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
 }
 
 .input-field:focus {
@@ -44,7 +46,7 @@
 }
 
 .input-wrapper .input-field {
-    padding-left: 28px;
+    padding-left: 32px;
 }
 
 .input-help {
@@ -86,9 +88,72 @@
 }
 
 /* Responsive Input Styles */
+@media (max-width: 768px) {
+    .input-group {
+        margin-bottom: 24px;
+    }
+
+    .input-field {
+        padding: 14px 16px;
+        font-size: 16px;
+        border-radius: 8px;
+    }
+
+    .input-wrapper .input-field {
+        padding-left: 36px;
+    }
+
+    .input-prefix {
+        left: 16px;
+        font-size: 16px;
+    }
+
+    .input-label {
+        font-size: 15px;
+        margin-bottom: 6px;
+    }
+
+    .input-help {
+        font-size: 13px;
+        margin-top: 6px;
+    }
+}
+
 @media (max-width: 480px) {
-    .form-input {
-        padding: 10px 12px;
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .input-field {
+        padding: 16px 18px;
+        font-size: 16px;
+        border-radius: 8px;
+        min-height: 48px;
+    }
+
+    .input-wrapper .input-field {
+        padding-left: 40px;
+    }
+
+    .input-prefix {
+        left: 18px;
+        font-size: 16px;
+    }
+
+    .input-label {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .input-help {
         font-size: 14px;
+        margin-top: 8px;
+        line-height: 1.4;
+    }
+
+    .form-input {
+        padding: 16px 18px;
+        font-size: 16px;
+        min-height: 48px;
     }
 } 

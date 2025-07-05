@@ -8,6 +8,9 @@
     border: 2px solid #007bff;
     margin-top: 24px;
     box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .breakdown-title {
@@ -20,10 +23,13 @@
 
 .table-container {
     overflow-x: auto;
+    width: 100%;
+    max-width: 100%;
 }
 
 .breakdown-table {
     width: 100%;
+    min-width: 500px;
     border-collapse: collapse;
     font-size: 14px;
 }
@@ -190,6 +196,26 @@
     .yearly-breakdown {
         padding: 16px;
     }
+    
+    /* Investment Calculator Table Mobile Optimization */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -16px;
+        padding: 0 16px;
+    }
+    
+    .breakdown-table th {
+        font-size: 11px;
+        padding: 6px 3px;
+        white-space: nowrap;
+    }
+    
+    .breakdown-table td {
+        font-size: 11px;
+        padding: 6px 3px;
+    }
+    
     .scenarios-table {
         font-size: 12px;
     }
@@ -223,6 +249,39 @@
 }
 
 @media (max-width: 480px) {
+    /* Investment Calculator Table Mobile Optimization - Small Screens */
+    .yearly-breakdown {
+        padding: 12px;
+        margin-top: 16px;
+    }
+    
+    .breakdown-title {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+    
+    .table-container {
+        margin: 0 -12px;
+        padding: 0 12px;
+    }
+    
+    .breakdown-table th {
+        font-size: 10px;
+        padding: 4px 2px;
+        white-space: nowrap;
+    }
+    
+    .breakdown-table td {
+        font-size: 10px;
+        padding: 4px 2px;
+    }
+    
+    .breakdown-table th:first-child,
+    .breakdown-table td:first-child {
+        font-size: 10px;
+        font-weight: 600;
+    }
+
     .cookie-table {
         font-size: 11px;
     }

@@ -26,6 +26,10 @@ function calculateBBDS() {
     document.getElementById('futureAssetValue').textContent = formatCurrency(futureAssetValue);
     document.getElementById('futureLTV').textContent = futureLTV.toFixed(1) + '%';
     
+    // Update dynamic titles based on years to project
+    document.querySelector('#futureAssetValue').parentElement.querySelector('.result-title').textContent = `Asset Value After ${yearsToProject} Years`;
+    document.querySelector('#futureLTV').parentElement.querySelector('.result-title').textContent = `Loan-to-Value After ${yearsToProject} Years`;
+    
     // Generate 50-year asset growth chart
     generateAssetGrowthChart(assetValue, assetGrowthRate, desiredMonthlyIncome, interestRate);
 }

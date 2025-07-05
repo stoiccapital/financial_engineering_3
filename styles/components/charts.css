@@ -95,8 +95,34 @@
 
 /* Responsive Chart Styles */
 @media (max-width: 768px) {
+    .scenarios {
+        margin-bottom: 40px;
+    }
+
+    .scenarios__title {
+        font-size: 20px;
+        margin-bottom: 6px;
+    }
+
+    .scenarios__subtitle {
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .chart-container {
+        height: 320px;
+        padding: 16px;
+        border-radius: 10px;
+        margin-bottom: 24px;
+    }
+
     .scenarios__chart {
-        height: 250px;
+        height: 100%;
+    }
+
+    .chart-tooltip {
+        font-size: 11px;
+        padding: 6px 10px;
     }
 
     .scenarios-table {
@@ -120,28 +146,38 @@
         color: #fff;
         font-weight: 600;
     }
-
-    .chart-container {
-        height: 300px;
-        padding: 16px;
-    }
-
-    .scenarios__chart {
-        height: 100%;
-    }
 }
 
 @media (max-width: 480px) {
-    .scenarios__chart {
-        height: 200px;
+    .scenarios {
+        margin-bottom: 32px;
+    }
+
+    .scenarios__title {
+        font-size: 18px;
+        margin-bottom: 4px;
+    }
+
+    .scenarios__subtitle {
+        font-size: 13px;
+        margin-bottom: 20px;
+        line-height: 1.4;
     }
 
     .chart-container {
-        height: 250px;
+        height: 280px;
         padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 20px;
     }
 
     .scenarios__chart {
         height: 100%;
+    }
+
+    .chart-tooltip {
+        font-size: 10px;
+        padding: 4px 8px;
+        border-radius: 6px;
     }
 } 

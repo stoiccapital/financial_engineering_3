@@ -24,9 +24,17 @@ function calculateStartingAmount() {
         document.getElementById('sa-result-value').textContent = 'Target amount is too low for the given parameters.';
     } else {
         document.getElementById('sa-result-value').textContent = formatCurrency(requiredPrincipal);
+        
+        // Calculate and display all result values
+        const totalContributions = monthlyContribution * years * 12;
+        const endAmount = calculateFutureValue(requiredPrincipal, monthlyContribution, returnRate, years);
+        const totalInterest = endAmount - requiredPrincipal - totalContributions;
+        
+        document.getElementById('sa-end-amount-value').textContent = formatCurrency(targetAmount);
+        document.getElementById('sa-starting-amount-value').textContent = formatCurrency(requiredPrincipal);
+        document.getElementById('sa-total-contributions-value').textContent = formatCurrency(totalContributions);
+        document.getElementById('sa-total-interest-value').textContent = formatCurrency(totalInterest);
     }
-    
-    document.getElementById('sa-result').classList.remove('hidden');
     
     // Generate yearly breakdown table and pie chart for successful calculations
     if (requiredPrincipal >= 0) {
@@ -37,4 +45,7 @@ function calculateStartingAmount() {
         const totalInterest = endAmount - requiredPrincipal - totalContributions;
         updateBalanceChart(requiredPrincipal, totalContributions, totalInterest);
     }
+    
+    // Show only relevant results for Starting Amount mode (at the very end)
+    showOnlyRelevantResults('starting-amount');
 } 

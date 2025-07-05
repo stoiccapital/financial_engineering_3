@@ -28,15 +28,12 @@ function calculateEndAmount() {
     document.getElementById('ea-total-contributions-value').textContent = formatCurrency(totalContributions);
     document.getElementById('ea-total-interest-value').textContent = formatCurrency(totalInterest);
     
-    // Show all result cards
-    document.getElementById('ea-result').classList.remove('hidden');
-    document.getElementById('ea-starting-amount-result').classList.remove('hidden');
-    document.getElementById('ea-total-contributions-result').classList.remove('hidden');
-    document.getElementById('ea-total-interest-result').classList.remove('hidden');
-    
     // Update the pie chart
     updateBalanceChart(startingAmount, totalContributions, totalInterest);
     
     // Generate yearly breakdown table
     generateYearlyBreakdown(startingAmount, monthlyContribution, returnRate, years);
+    
+    // Show only relevant results for End Amount mode (at the very end)
+    showOnlyRelevantResults('end-amount');
 } 

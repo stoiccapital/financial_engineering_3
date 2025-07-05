@@ -24,9 +24,17 @@ function calculateInvestmentLength() {
         document.getElementById('il-result-value').textContent = 'It will take more than 100 years to reach the target.';
     } else {
         document.getElementById('il-result-value').textContent = formatYears(timeToTarget);
+        
+        // Calculate and display all result values
+        const totalContributions = monthlyContribution * timeToTarget * 12;
+        const endAmount = calculateFutureValue(startingAmount, monthlyContribution, returnRate, timeToTarget);
+        const totalInterest = endAmount - startingAmount - totalContributions;
+        
+        document.getElementById('il-end-amount-value').textContent = formatCurrency(targetAmount);
+        document.getElementById('il-starting-amount-value').textContent = formatCurrency(startingAmount);
+        document.getElementById('il-total-contributions-value').textContent = formatCurrency(totalContributions);
+        document.getElementById('il-total-interest-value').textContent = formatCurrency(totalInterest);
     }
-    
-    document.getElementById('il-result').classList.remove('hidden');
     
     // Generate yearly breakdown table and pie chart for successful calculations
     if (timeToTarget <= 100) {
@@ -37,4 +45,7 @@ function calculateInvestmentLength() {
         const totalInterest = endAmount - startingAmount - totalContributions;
         updateBalanceChart(startingAmount, totalContributions, totalInterest);
     }
+    
+    // Show only relevant results for Investment Length mode (at the very end)
+    showOnlyRelevantResults('investment-length');
 } 

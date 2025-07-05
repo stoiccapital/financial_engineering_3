@@ -18,9 +18,9 @@ function calculateStrategies() {
     // 2. Asset Depletion (4% rule equivalent)
     const depletionAssets = annualIncome / withdrawalRate;
     
-    // 3. Buy, Borrow, Die (assuming 50% LTV ratio)
-    const ltvRatio = 0.5; // 50% loan-to-value ratio
-    const bbdAssets = (annualIncome / borrowingRate) / ltvRatio;
+    // 3. Buy, Borrow, Die (using borrowing rate as LTV ratio)
+    const ltvRatio = borrowingRate; // Use borrowing rate as LTV ratio
+    const bbdAssets = annualIncome / ltvRatio;
     
     // Update results
     document.getElementById('dividendAssets').textContent = formatCurrency(dividendAssets);
@@ -63,14 +63,15 @@ function generateAssetValueChart(desiredIncome, compoundingRate, dividendYield, 
     const annualIncome = desiredIncome * 12;
     const dividendAssets = annualIncome / dividendYield;
     const depletionAssets = annualIncome / withdrawalRate;
-    const ltvRatio = 0.5;
-    const bbdAssets = (annualIncome / borrowingRate) / ltvRatio;
+    const ltvRatio = borrowingRate;
+    const bbdAssets = annualIncome / ltvRatio;
     
     for (let year = 0; year <= yearsToProject; year++) {
         yearLabels.push(year);
         
-        // Dividend strategy: assets grow but no withdrawals
-        const dividendValue = dividendAssets * Math.pow(1 + compoundingRate, year);
+        // Dividend strategy: assets grow at reduced rate (growth rate - dividend yield)
+        const adjustedGrowthRate = compoundingRate - dividendYield;
+        const dividendValue = dividendAssets * Math.pow(1 + adjustedGrowthRate, year);
         dividendValues.push(dividendValue);
         
         // Depletion strategy: assets grow but withdrawals reduce them
@@ -264,26 +265,28 @@ function generateNetWorthChart(desiredIncome, compoundingRate, dividendYield, wi
     const annualIncome = desiredIncome * 12;
     const dividendAssets = annualIncome / dividendYield;
     const depletionAssets = annualIncome / withdrawalRate;
-    const ltvRatio = 0.5;
-    const bbdAssets = (annualIncome / borrowingRate) / ltvRatio;
+    const ltvRatio = borrowingRate;
+    const bbdAssets = annualIncome / ltvRatio;
     
     for (let year = 0; year <= yearsToProject; year++) {
         yearLabels.push(year);
         
-        // Dividend strategy: net worth = assets (no debt)
-        const dividendValue = dividendAssets * Math.pow(1 + compoundingRate, year);
+        // Dividend strategy: net worth = assets (no debt), adjusted growth rate
+        const adjustedGrowthRate = compoundingRate - dividendYield;
+        const dividendValue = dividendAssets * Math.pow(1 + adjustedGrowthRate, year);
         dividendNetWorth.push(dividendValue);
         
         // Depletion strategy: net worth = remaining assets
         let depletionValue = depletionAssets;
         for (let y = 0; y < year; y++) {
-            depletionValue = depletionValue * (1 + compoundingRate) - annualIncome;
+            const yearlyWithdrawal = depletionValue * withdrawalRate;
+            depletionValue = depletionValue * (1 + compoundingRate) - yearlyWithdrawal;
         }
         depletionNetWorth.push(Math.max(0, depletionValue));
         
         // Buy, Borrow, Die: net worth = assets - debt
         const bbdAssetValue = bbdAssets * Math.pow(1 + compoundingRate, year);
-        const debtAmount = (bbdAssets * ltvRatio) * Math.pow(1 + borrowingRate, year);
+        const debtAmount = bbdAssets * ltvRatio; // Fixed debt amount (initial loan)
         const bbdNetWorthValue = bbdAssetValue - debtAmount;
         bbdNetWorth.push(Math.max(0, bbdNetWorthValue));
     }
@@ -467,28 +470,30 @@ function generateIncomeChart(desiredIncome, compoundingRate, dividendYield, with
     const annualIncome = desiredIncome * 12;
     const dividendAssets = annualIncome / dividendYield;
     const depletionAssets = annualIncome / withdrawalRate;
-    const ltvRatio = 0.5;
-    const bbdAssets = (annualIncome / borrowingRate) / ltvRatio;
+    const ltvRatio = borrowingRate;
+    const bbdAssets = annualIncome / ltvRatio;
     
     for (let year = 0; year <= yearsToProject; year++) {
         yearLabels.push(year);
         
-        // Dividend strategy: income grows with asset growth
-        const dividendValue = dividendAssets * Math.pow(1 + compoundingRate, year);
+        // Dividend strategy: income grows with adjusted asset growth
+        const adjustedGrowthRate = compoundingRate - dividendYield;
+        const dividendValue = dividendAssets * Math.pow(1 + adjustedGrowthRate, year);
         const dividendIncomeValue = dividendValue * dividendYield;
         dividendIncome.push(dividendIncomeValue / 12); // Convert to monthly
         
-        // Depletion strategy: fixed income until assets run out
+        // Depletion strategy: income based on withdrawal rate percentage of current assets
         let depletionValue = depletionAssets;
         for (let y = 0; y < year; y++) {
-            depletionValue = depletionValue * (1 + compoundingRate) - annualIncome;
+            const yearlyWithdrawal = depletionValue * withdrawalRate;
+            depletionValue = depletionValue * (1 + compoundingRate) - yearlyWithdrawal;
         }
-        const depletionIncomeValue = depletionValue > 0 ? annualIncome : 0;
+        const depletionIncomeValue = depletionValue > 0 ? depletionValue * withdrawalRate : 0;
         depletionIncome.push(depletionIncomeValue / 12); // Convert to monthly
         
         // Buy, Borrow, Die: income from dividends on remaining equity
         const bbdAssetValue = bbdAssets * Math.pow(1 + compoundingRate, year);
-        const debtAmount = (bbdAssets * ltvRatio) * Math.pow(1 + borrowingRate, year);
+        const debtAmount = bbdAssets * ltvRatio; // Fixed debt amount (initial loan)
         const equityValue = Math.max(0, bbdAssetValue - debtAmount);
         const bbdIncomeValue = equityValue * dividendYield;
         bbdIncome.push(bbdIncomeValue / 12); // Convert to monthly

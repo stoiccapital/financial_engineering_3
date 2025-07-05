@@ -22,7 +22,8 @@ function calculateAdditionalContribution() {
     
     if (requiredContribution < 0) {
         document.getElementById('ac-result-value').textContent = 'Target amount is too low for the given parameters.';
-        document.getElementById('ac-result').classList.remove('hidden');
+        // Show only relevant results for Additional Contribution mode (error case)
+        showOnlyRelevantResults('additional-contribution');
         return;
     }
     
@@ -30,15 +31,19 @@ function calculateAdditionalContribution() {
     const totalContributions = requiredContribution * years * 12;
     const totalInterest = targetAmount - startingAmount - totalContributions;
     
-    // Display the main result
+    // Display all results
     document.getElementById('ac-result-value').textContent = formatCurrency(requiredContribution);
-    
-    // Show the result card
-    document.getElementById('ac-result').classList.remove('hidden');
+    document.getElementById('ac-end-amount-value').textContent = formatCurrency(targetAmount);
+    document.getElementById('ac-starting-amount-value').textContent = formatCurrency(startingAmount);
+    document.getElementById('ac-total-contributions-value').textContent = formatCurrency(totalContributions);
+    document.getElementById('ac-total-interest-value').textContent = formatCurrency(totalInterest);
     
     // Update the pie chart for unified breakdown
     updateBalanceChart(startingAmount, totalContributions, totalInterest);
     
     // Generate yearly breakdown table
     generateYearlyBreakdown(startingAmount, requiredContribution, returnRate, years);
+    
+    // Show only relevant results for Additional Contribution mode (at the very end)
+    showOnlyRelevantResults('additional-contribution');
 } 

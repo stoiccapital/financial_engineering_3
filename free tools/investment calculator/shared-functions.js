@@ -19,16 +19,36 @@ function showMode(mode) {
     buttons.forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
     
-    // Clear all results
+    // Clear all results and ensure they stay hidden
     clearAllResults();
+    
+    // Auto-calculate for the selected mode
+    setTimeout(function() {
+        switch(mode) {
+            case 'end-amount':
+                calculateEndAmount();
+                break;
+            case 'additional-contribution':
+                calculateAdditionalContribution();
+                break;
+            case 'return-rate':
+                calculateReturnRate();
+                break;
+            case 'starting-amount':
+                calculateStartingAmount();
+                break;
+            case 'investment-length':
+                calculateInvestmentLength();
+                break;
+        }
+    }, 100);
 }
 
 // Clear all result displays
 function clearAllResults() {
     const results = [
         'ea-result', 'ea-starting-amount-result', 'ea-total-contributions-result', 'ea-total-interest-result',
-        'ac-result', 'ac-starting-amount-result', 'ac-future-value-result', 'ac-contributions-needed-result',
-        'rr-result', 'sa-result', 'il-result'
+        'ac-result', 'rr-result', 'sa-result', 'il-result'
     ];
     results.forEach(id => {
         const element = document.getElementById(id);
@@ -53,6 +73,72 @@ function clearAllResults() {
                 </td>
             </tr>
         `;
+    }
+}
+
+// Function to show only relevant results for each mode
+function showOnlyRelevantResults(mode) {
+    // Hide all result cards first
+    const allResults = [
+        'ea-result', 'ea-starting-amount-result', 'ea-total-contributions-result', 'ea-total-interest-result',
+        'ac-result', 'ac-end-amount-result', 'ac-starting-amount-result', 'ac-total-contributions-result', 'ac-total-interest-result',
+        'rr-result', 'rr-end-amount-result', 'rr-starting-amount-result', 'rr-total-contributions-result', 'rr-total-interest-result',
+        'sa-result', 'sa-end-amount-result', 'sa-starting-amount-result', 'sa-total-contributions-result', 'sa-total-interest-result',
+        'il-result', 'il-end-amount-result', 'il-starting-amount-result', 'il-total-contributions-result', 'il-total-interest-result'
+    ];
+    allResults.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.classList.add('hidden');
+        }
+    });
+    
+    // Then show only the relevant results for the current mode
+    switch(mode) {
+        case 'end-amount':
+            // End Amount mode shows multiple result cards
+            document.getElementById('ea-result').classList.remove('hidden');
+            document.getElementById('ea-starting-amount-result').classList.remove('hidden');
+            document.getElementById('ea-total-contributions-result').classList.remove('hidden');
+            document.getElementById('ea-total-interest-result').classList.remove('hidden');
+            console.log('Showing End Amount results');
+            break;
+        case 'additional-contribution':
+            // Additional Contribution mode shows multiple result cards
+            document.getElementById('ac-result').classList.remove('hidden');
+            document.getElementById('ac-end-amount-result').classList.remove('hidden');
+            document.getElementById('ac-starting-amount-result').classList.remove('hidden');
+            document.getElementById('ac-total-contributions-result').classList.remove('hidden');
+            document.getElementById('ac-total-interest-result').classList.remove('hidden');
+            console.log('Showing Additional Contribution results');
+            break;
+        case 'return-rate':
+            // Return Rate mode shows multiple result cards
+            document.getElementById('rr-result').classList.remove('hidden');
+            document.getElementById('rr-end-amount-result').classList.remove('hidden');
+            document.getElementById('rr-starting-amount-result').classList.remove('hidden');
+            document.getElementById('rr-total-contributions-result').classList.remove('hidden');
+            document.getElementById('rr-total-interest-result').classList.remove('hidden');
+            console.log('Showing Return Rate results');
+            break;
+        case 'starting-amount':
+            // Starting Amount mode shows multiple result cards
+            document.getElementById('sa-result').classList.remove('hidden');
+            document.getElementById('sa-end-amount-result').classList.remove('hidden');
+            document.getElementById('sa-starting-amount-result').classList.remove('hidden');
+            document.getElementById('sa-total-contributions-result').classList.remove('hidden');
+            document.getElementById('sa-total-interest-result').classList.remove('hidden');
+            console.log('Showing Starting Amount results');
+            break;
+        case 'investment-length':
+            // Investment Length mode shows multiple result cards
+            document.getElementById('il-result').classList.remove('hidden');
+            document.getElementById('il-end-amount-result').classList.remove('hidden');
+            document.getElementById('il-starting-amount-result').classList.remove('hidden');
+            document.getElementById('il-total-contributions-result').classList.remove('hidden');
+            document.getElementById('il-total-interest-result').classList.remove('hidden');
+            console.log('Showing Investment Length results');
+            break;
     }
 }
 
@@ -337,7 +423,7 @@ function updateBalanceChart(startingAmount, totalContributions, totalInterest) {
     balanceChart = new Chart(ctx, config);
 }
 
-// Add keyboard event listeners for Enter key
+// Add keyboard event listeners for Enter key and auto-calculation
 document.addEventListener('DOMContentLoaded', function() {
     const inputs = document.querySelectorAll('input[type="number"]');
     inputs.forEach(input => {
@@ -350,7 +436,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+        
+        // Add input event listener for auto-calculation when values change
+        input.addEventListener('input', function() {
+            // Determine which mode is currently active and auto-calculate
+            const activeMode = document.querySelector('.calculation-mode:not(.hidden)');
+            if (activeMode) {
+                const modeId = activeMode.id;
+                setTimeout(function() {
+                    switch(modeId) {
+                        case 'end-amount':
+                            calculateEndAmount();
+                            break;
+                        case 'additional-contribution':
+                            calculateAdditionalContribution();
+                            break;
+                        case 'return-rate':
+                            calculateReturnRate();
+                            break;
+                        case 'starting-amount':
+                            calculateStartingAmount();
+                            break;
+                        case 'investment-length':
+                            calculateInvestmentLength();
+                            break;
+                    }
+                }, 100);
+            }
+        });
     });
+    
+    // Auto-calculate with default values when page loads
+    // Wait a short moment to ensure all elements are loaded
+    setTimeout(function() {
+        // Calculate End Amount (default mode) automatically
+        calculateEndAmount();
+    }, 100);
     
     // Debug: Check if yearly breakdown elements exist
     const yearlyBreakdown = document.getElementById('yearly-breakdown');

@@ -8,6 +8,10 @@
     padding: 20px;
     text-align: center;
     transition: all 0.2s ease;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .result-card:hover {
@@ -38,7 +42,7 @@
 .result-value {
     font-size: 24px;
     font-weight: 700;
-    color: #333;
+    color: #000;
 }
 
 .result-card--primary .result-value {
@@ -122,6 +126,21 @@
 
 /* Responsive Card Styles */
 @media (max-width: 768px) {
+    .result-card {
+        padding: 18px;
+        min-height: 90px;
+        border-radius: 10px;
+    }
+
+    .result-title {
+        font-size: 15px;
+        margin-bottom: 6px;
+    }
+
+    .result-value {
+        font-size: 22px;
+    }
+
     .blog-card,
     .tool-card {
         padding: 20px;
@@ -133,6 +152,23 @@
 }
 
 @media (max-width: 480px) {
+    .result-card {
+        padding: 20px;
+        min-height: 100px;
+        border-radius: 12px;
+    }
+
+    .result-title {
+        font-size: 16px;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .result-value {
+        font-size: 24px;
+        font-weight: 700;
+    }
+
     .blog-card,
     .tool-card {
         padding: 16px;

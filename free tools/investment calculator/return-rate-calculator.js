@@ -24,14 +24,15 @@ function calculateReturnRate() {
     
     if (totalWithoutInterest >= targetAmount) {
         document.getElementById('rr-result-value').textContent = '0.00%';
-        document.getElementById('rr-result').classList.remove('hidden');
-            // Generate yearly breakdown table for 0% interest case
-    generateYearlyBreakdown(startingAmount, monthlyContribution, 0, years);
-    // Generate pie chart for 0% interest case
-    const totalContributions0 = monthlyContribution * years * 12;
-    const totalInterest0 = 0;
-    updateBalanceChart(startingAmount, totalContributions0, totalInterest0);
-    return;
+        // Generate yearly breakdown table for 0% interest case
+        generateYearlyBreakdown(startingAmount, monthlyContribution, 0, years);
+        // Generate pie chart for 0% interest case
+        const totalContributions0 = monthlyContribution * years * 12;
+        const totalInterest0 = 0;
+        updateBalanceChart(startingAmount, totalContributions0, totalInterest0);
+        // Show only relevant results for Return Rate mode (0% case)
+        showOnlyRelevantResults('return-rate');
+        return;
     }
     
     const requiredRate = calculateRequiredRate(startingAmount, monthlyContribution, targetAmount, years);
@@ -40,9 +41,17 @@ function calculateReturnRate() {
         document.getElementById('rr-result-value').textContent = 'Target amount is impossible to reach with these parameters.';
     } else {
         document.getElementById('rr-result-value').textContent = formatPercentage(requiredRate);
+        
+        // Calculate and display all result values
+        const totalContributions = monthlyContribution * years * 12;
+        const endAmount = calculateFutureValue(startingAmount, monthlyContribution, requiredRate, years);
+        const totalInterest = endAmount - startingAmount - totalContributions;
+        
+        document.getElementById('rr-end-amount-value').textContent = formatCurrency(targetAmount);
+        document.getElementById('rr-starting-amount-value').textContent = formatCurrency(startingAmount);
+        document.getElementById('rr-total-contributions-value').textContent = formatCurrency(totalContributions);
+        document.getElementById('rr-total-interest-value').textContent = formatCurrency(totalInterest);
     }
-    
-    document.getElementById('rr-result').classList.remove('hidden');
     
     // Generate yearly breakdown table and pie chart for successful calculations
     if (requiredRate !== -1) {
@@ -53,4 +62,7 @@ function calculateReturnRate() {
         const totalInterest = endAmount - startingAmount - totalContributions;
         updateBalanceChart(startingAmount, totalContributions, totalInterest);
     }
+    
+    // Show only relevant results for Return Rate mode (at the very end)
+    showOnlyRelevantResults('return-rate');
 } 
