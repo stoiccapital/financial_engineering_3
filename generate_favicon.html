@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Favicon Generator</title>
+</head>
+<body>
+    <canvas id="favicon" width="32" height="32"></canvas>
+    <script>
+        const canvas = document.getElementById('favicon');
+        const ctx = canvas.getContext('2d');
+        
+        // Create gradient background
+        const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+        gradient.addColorStop(0, '#1e40af');
+        gradient.addColorStop(1, '#1e3a8a');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 32, 32);
+        
+        // Add a subtle border
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(0.5, 0.5, 31, 31);
+        
+        // Draw dollar sign
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 18px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('$', 16, 18);
+        
+        // Add small decorative dots
+        ctx.fillStyle = '#3b82f6';
+        ctx.globalAlpha = 0.7;
+        ctx.beginPath();
+        ctx.arc(8, 8, 1.5, 0, 2 * Math.PI);
+        ctx.arc(24, 8, 1.5, 0, 2 * Math.PI);
+        ctx.arc(8, 24, 1.5, 0, 2 * Math.PI);
+        ctx.arc(24, 24, 1.5, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Convert to data URL
+        const dataURL = canvas.toDataURL('image/png');
+        console.log('Favicon generated. Data URL:', dataURL.substring(0, 50) + '...');
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.download = 'favicon.png';
+        link.href = dataURL;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    </script>
+</body>
+</html> 
