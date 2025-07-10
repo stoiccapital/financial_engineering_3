@@ -4,43 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finmetic - Financial Arithmetic</title>
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="finmetic/styles/main.css">
 </head>
 <body>
-    <header class="header">
-        <nav class="nav">
-            <div class="nav__container">
-                <!-- Logo/Brand -->
-                <a href="index.html" class="nav__brand">Finmetic</a>
-                
-                <!-- Desktop Navigation -->
-                <ul class="nav__menu">
-                    <li class="nav__item">
-                        <a href="blogs/blogs.html" class="nav__link">Blogs</a>
-                    </li>
-                    <li class="nav__item">
-                        <a href="free tools/free-tools.html" class="nav__link">Free Tools</a>
-                    </li>
-                    <li class="nav__item">
-                        <a href="login.html" class="nav__link nav__link--login">Log In</a>
-                    </li>
-                </ul>
-                
-                <!-- Mobile Hamburger Menu -->
-                <button class="nav__toggle" aria-label="Toggle navigation">
-                    <span class="nav__toggle-line"></span>
-                    <span class="nav__toggle-line"></span>
-                    <span class="nav__toggle-line"></span>
-                </button>
-            </div>
-        </nav>
-    </header>
+    <!-- Include the navbar component -->
+    <div id="navbar-container"></div>
 
     <main class="main">
         <section class="hero">
             <div class="hero__container">
                 <h1 class="hero__title">Financial Arithmetic</h1>
                 <p class="hero__description">Financial Independence through Discipline, Rational Thinking, and Arithmetic.</p>
+            </div>
+        </section>
+        <section class="features">
+            <div class="features__container">
+                <h2 class="features__title">Choose Your Experience</h2>
+                <div class="features__grid">
+                    <div class="feature-card">
+                        <h3>Financial Dashboard</h3>
+                        <p>Comprehensive financial management platform with advanced analytics, portfolio tracking, and goal setting.</p>
+                        <a href="/app/" class="btn btn--primary">Launch Dashboard</a>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Free Financial Tools</h3>
+                        <p>Educational platform with free financial calculators, tools, and resources for financial independence.</p>
+                        <a href="finmetic/free-tools/free-tools.html" class="btn btn--secondary">Explore Tools</a>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -55,16 +46,16 @@
                 <div class="footer__section">
                     <h4>Legal</h4>
                     <ul>
-                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
-                        <li><a href="terms-of-service.html">Terms of Service</a></li>
-                        <li><a href="cookies.html">Cookie Policy</a></li>
+                        <li><a href="finmetic/Footer/privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="finmetic/Footer/terms-of-service.html">Terms of Service</a></li>
+                        <li><a href="finmetic/Footer/cookies.html">Cookie Policy</a></li>
                     </ul>
                 </div>
                 <div class="footer__section">
                     <h4>Tools</h4>
                     <ul>
-                        <li><a href="free tools/free-tools.html">Free Tools</a></li>
-                        <li><a href="blogs/blogs.html">Blogs</a></li>
+                        <li><a href="finmetic/free-tools/free-tools.html">Free Tools</a></li>
+                        <li><a href="finmetic/blogs/blogs.html">Blogs</a></li>
                     </ul>
                 </div>
             </div>
@@ -74,6 +65,23 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="finmetic/utils/auth.js"></script>
+    <script src="finmetic/components/navbar.js"></script>
+    <script src="finmetic/script.js"></script>
+    <script>
+        // Load the navbar component
+        fetch('finmetic/components/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('navbar-container').innerHTML = html;
+                // Re-initialize navbar after loading
+                if (window.websiteNavbar) {
+                    window.websiteNavbar.setupNavbar();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading navbar:', error);
+            });
+    </script>
 </body>
 </html> 

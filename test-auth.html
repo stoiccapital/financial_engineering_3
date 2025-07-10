@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Test - Finmetic</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.success { background-color: #d4edda; color: #155724; }
+        .status.error { background-color: #f8d7da; color: #721c24; }
+        .status.info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Authentication Test Page</h1>
+    
+    <div class="test-section">
+        <h2>Current Status</h2>
+        <div id="auth-status">Loading...</div>
+        <div id="user-info">Loading user info...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Actions</h2>
+        <button class="btn btn-primary" onclick="testAuthCheck()">Check Authentication</button>
+        <button class="btn btn-success" onclick="goToApp()">Go to App</button>
+        <button class="btn btn-danger" onclick="signOut()">Sign Out</button>
+        <button class="btn btn-primary" onclick="goToLogin()">Go to Login</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Console Logs</h2>
+        <div id="console-logs"></div>
+    </div>
+
+    <!-- Environment Variables Loader (load first) -->
+    <script src="finmetic/config/env-loader.js"></script>
+    <!-- Supabase Client -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <!-- API Keys -->
+    <script src="finmetic/config/supabase.js"></script>
+    <!-- Configuration -->
+    <script src="finmetic/config/config.js"></script>
+    <!-- Auth Utils -->
+    <script src="app/utils/auth.js"></script>
+    
+    <script>
+        // Override console.log to capture logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logContainer = document.getElementById('console-logs');
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const logEntry = document.createElement('div');
+            logEntry.style.padding = '5px';
+            logEntry.style.borderBottom = '1px solid #eee';
+            logEntry.textContent = `[LOG] ${args.join(' ')}`;
+            logContainer.appendChild(logEntry);
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            const logEntry = document.createElement('div');
+            logEntry.style.padding = '5px';
+            logEntry.style.borderBottom = '1px solid #eee';
+            logEntry.style.color = 'red';
+            logEntry.textContent = `[ERROR] ${args.join(' ')}`;
+            logContainer.appendChild(logEntry);
+        };
+        
+        async function updateStatus() {
+            const statusDiv = document.getElementById('auth-status');
+            const userInfoDiv = document.getElementById('user-info');
+            
+            try {
+                if (window.appAuth) {
+                    const isAuth = await window.appAuth.isAuthenticated();
+                    const user = window.appAuth.getCurrentUser();
+                    
+                    if (isAuth) {
+                        statusDiv.innerHTML = '<div class="status success">✅ User is authenticated</div>';
+                        userInfoDiv.innerHTML = `
+                            <div class="status info">
+                                <strong>User Info:</strong><br>
+                                Name: ${user?.user_metadata?.full_name || 'N/A'}<br>
+                                Email: ${user?.email || 'N/A'}<br>
+                                ID: ${user?.id || 'N/A'}
+                            </div>
+                        `;
+                    } else {
+                        statusDiv.innerHTML = '<div class="status error">❌ User is not authenticated</div>';
+                        userInfoDiv.innerHTML = '<div class="status info">No user information available</div>';
+                    }
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">❌ AppAuth not available</div>';
+                    userInfoDiv.innerHTML = '<div class="status info">Auth system not loaded</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+                userInfoDiv.innerHTML = '<div class="status info">Error occurred while checking status</div>';
+            }
+        }
+        
+        async function testAuthCheck() {
+            console.log('Testing authentication check...');
+            try {
+                if (window.appAuth) {
+                    const isAuth = await window.appAuth.requireAuth();
+                    console.log('requireAuth result:', isAuth);
+                } else {
+                    console.log('AppAuth not available');
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+            }
+        }
+        
+        function goToApp() {
+            console.log('Navigating to app...');
+            window.location.href = '/app/index.html';
+        }
+        
+        function goToLogin() {
+            console.log('Navigating to login...');
+            window.location.href = '/finmetic/login/login.html';
+        }
+        
+        async function signOut() {
+            console.log('Signing out...');
+            try {
+                if (window.appAuth) {
+                    await window.appAuth.signOut();
+                    console.log('Signed out successfully');
+                    updateStatus();
+                } else {
+                    console.log('AppAuth not available for sign out');
+                }
+            } catch (error) {
+                console.error('Sign out error:', error);
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Test page loaded');
+            await updateStatus();
+        });
+        
+        // Update status every 5 seconds
+        setInterval(updateStatus, 5000);
+    </script>
+</body>
+</html> 
